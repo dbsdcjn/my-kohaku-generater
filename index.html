@@ -3,72 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My紅白歌合戦メーカー 2025（スマホ対応版）</title>
+    <title>My紅白歌合戦メーカー 2025</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; background: #f0f0f0; margin: 0; padding: 20px; }
+        .container { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
         
-        /* コンテナ：PCでは横並び、スマホでは縦並び */
-        .container { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
-
         /* 入力エリアのスタイル */
         .input-area { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 300px; }
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 16px; } /* スマホで入力しやすいよう少し大きく */
-        textarea { height: 120px; }
-        button { background: #333; color: white; border: none; padding: 12px 20px; cursor: pointer; font-size: 16px; border-radius: 4px; width: 100%; font-weight: bold; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 150px; }
+        button { background: #333; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 16px; border-radius: 4px; width: 100%; }
         button:hover { background: #555; }
 
-        /* プレビューエリアのラッパー（ここを基準に縮小します） */
-        #preview-wrapper {
-            flex: 2;
-            overflow: hidden; /* はみ出た部分を隠す */
-            display: flex;
-            justify-content: center;
-            padding-top: 20px;
-        }
-
-        /* プレビューエリア本体（画像化される部分：幅800px固定） */
+        /* プレビューエリア（画像化される部分） */
         #preview-area { 
             width: 800px; 
-            /* 縮小の基準点を左上に設定 */
-            transform-origin: top left;
             background: white; 
             padding: 40px; 
             box-sizing: border-box; 
             text-align: center;
             font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* --- 以下プレビュー内のデザイン --- */
+        /* ロゴ・タイトル部分（修正箇所：N◯K） */
         .header-logo { font-size: 24px; color: #b8860b; margin-bottom: 10px; font-weight: bold; }
         .main-title { font-size: 42px; font-weight: bold; margin-bottom: 40px; color: #333; letter-spacing: 2px; }
+
+        /* 紅白のリスト表示部分 */
         .teams-container { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
         .team { flex: 1; }
+        
+        /* 各組ヘッダー共通設定 */
         .team-header { padding: 10px; font-weight: bold; margin-bottom: 20px; font-family: sans-serif; }
+        
+        /* 紅組ヘッダー */
         .red-header { background: #ffebeb; color: #d32f2f; border-top: 4px solid #d32f2f; }
+        /* 白組ヘッダー */
         .white-header { background: #fff8e1; color: #b8860b; border-top: 4px solid #b8860b; }
+        /* 特別企画ヘッダー */
         .special-header { background: #e0f2f1; color: #00695c; border-top: 4px solid #009688; }
+
+        /* 出場者リスト */
         .artist-list { list-style: none; padding: 0; margin: 0; text-align: center; }
         .artist-list li { padding: 12px 0; border-bottom: 1px dotted #ccc; font-weight: bold; font-size: 18px; }
+        
+        /* 文字色 */
         .red-team .artist-list li { color: #d32f2f; }
         .white-team .artist-list li { color: #b8860b; }
         .special-section .artist-list li { color: #004d40; }
-        .special-section { margin-top: 30px; }
 
-        /* --- スマホ向けレスポンシブ設定 --- */
-        /* 画面幅が900px以下（スマホやタブレット縦）のとき */
-        @media (max-width: 900px) {
-            body { padding: 10px; }
-            /* 全体を縦並びにする */
-            .container { flex-direction: column; align-items: stretch; }
-            /* 入力エリアの幅を最大にする */
-            .input-area { min-width: auto; width: 100%; }
-            /* プレビューラッパーも幅を合わせる */
-            #preview-wrapper { width: 100%; padding-top: 0; margin-top: 20px; }
-        }
+        /* 特別企画エリア全体 */
+        .special-section { margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -115,40 +103,13 @@
                 <div class="team-header special-header">特別企画</div>
                 <ul class="artist-list" id="list-special"></ul>
             </div>
-        </div>
+            
+            </div>
     </div>
 </div>
 
 <script>
     updatePreview();
-    // 画面サイズが変わったときも縮小率を再計算
-    window.addEventListener('resize', fitPreviewToScreen);
-    // 初期表示時にも実行
-    fitPreviewToScreen();
-
-    // プレビューを画面幅に合わせて縮小する関数
-    function fitPreviewToScreen() {
-        const wrapper = document.getElementById('preview-wrapper');
-        const preview = document.getElementById('preview-area');
-        // ラッパー（スマホ画面幅）の幅を取得
-        const wrapperWidth = wrapper.clientWidth;
-        // プレビュー本来の幅（800px）
-        const previewWidth = 800;
-
-        // 画面がプレビューより狭い場合のみ縮小処理
-        if (wrapperWidth < previewWidth) {
-            // 縮小率を計算（例: 画面が400pxなら 400/800 = 0.5倍）
-            const scale = wrapperWidth / previewWidth;
-            // CSSで縮小を適用
-            preview.style.transform = `scale(${scale})`;
-            // 縮小した分、下の余白が空きすぎるので高さを調整
-            wrapper.style.height = `${preview.getBoundingClientRect().height}px`;
-        } else {
-            // PCなど十分広い場合は元に戻す
-            preview.style.transform = 'scale(1)';
-            wrapper.style.height = 'auto';
-        }
-    }
 
     function updatePreview() {
         document.getElementById('display-title').innerText = document.getElementById('input-title').value;
@@ -167,27 +128,19 @@
                 }
             });
         }
+
         generateList('input-red', 'list-red');
         generateList('input-white', 'list-white');
         generateList('input-special', 'list-special');
-        
-        // 内容が変わると高さが変わるので、縮小率を再計算
-        setTimeout(fitPreviewToScreen, 0);
     }
 
     function downloadImage() {
         const target = document.getElementById('preview-area');
-        // 画像化する際は、一時的に縮小を解除して高画質で撮る
-        const originalTransform = target.style.transform;
-        target.style.transform = 'scale(1)';
-
         html2canvas(target, { scale: 2 }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'kohaku_2025.png';
             link.href = canvas.toDataURL();
             link.click();
-            // 撮影が終わったら縮小状態に戻す
-            target.style.transform = originalTransform;
         });
     }
 </script>
