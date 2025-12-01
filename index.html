@@ -6,144 +6,93 @@
     <title>My紅白歌合戦メーカー 2025</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; background: #f0f0f0; margin: 0; padding: 20px; }
-        .container { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+        /* ページ全体の基本設定 */
+        body { font-family: sans-serif; background: #eee; margin: 0; padding: 20px; color: #333; }
         
-        /* 入力エリアのスタイル */
-        .input-area { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 300px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        textarea { height: 150px; }
-        button { background: #333; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 16px; border-radius: 4px; width: 100%; }
+        /* レイアウト枠：PCなら横並び、スマホなら縦並び */
+        .container { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
+
+        /* 左側：入力フォームのデザイン */
+        .input-area { 
+            flex: 1; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            min-width: 300px; 
+        }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+        }
+        input[type="text"]:focus, textarea:focus { border-color: #b8860b; outline: none; }
+        textarea { height: 120px; resize: vertical; }
+        
+        button { 
+            background: #333; color: white; border: none; padding: 15px; 
+            cursor: pointer; font-size: 16px; border-radius: 6px; 
+            width: 100%; font-weight: bold; transition: background 0.3s;
+        }
         button:hover { background: #555; }
 
-        /* プレビューエリア（画像化される部分） */
+        /* --- ここから画像になる部分のデザイン --- */
+        /* プレビューのラッパー（スマホで縮小表示するための枠） */
+        #preview-wrapper {
+            flex: 2;
+            overflow: hidden; 
+            display: flex;
+            justify-content: center; /* 中央寄せ */
+            align-items: flex-start;
+            /* 背景に余白を持たせる */
+            padding: 10px;
+        }
+
+        /* 画像化される本体（幅800px固定・絶対崩れないようにする） */
         #preview-area { 
-            width: 800px; 
+            width: 800px;  /* ここを固定することで画像サイズを一律にする */
+            min-width: 800px;
             background: white; 
-            padding: 40px; 
+            padding: 50px 40px; 
             box-sizing: border-box; 
             text-align: center;
+            /* NHK風フォント */
             font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            /* 縮小の基準点 */
+            transform-origin: top center;
         }
 
-        /* ロゴ・タイトル部分（修正箇所：N◯K） */
-        .header-logo { font-size: 24px; color: #b8860b; margin-bottom: 10px; font-weight: bold; }
-        .main-title { font-size: 42px; font-weight: bold; margin-bottom: 40px; color: #333; letter-spacing: 2px; }
-
-        /* 紅白のリスト表示部分 */
-        .teams-container { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
-        .team { flex: 1; }
-        
-        /* 各組ヘッダー共通設定 */
-        .team-header { padding: 10px; font-weight: bold; margin-bottom: 20px; font-family: sans-serif; }
-        
-        /* 紅組ヘッダー */
-        .red-header { background: #ffebeb; color: #d32f2f; border-top: 4px solid #d32f2f; }
-        /* 白組ヘッダー */
-        .white-header { background: #fff8e1; color: #b8860b; border-top: 4px solid #b8860b; }
-        /* 特別企画ヘッダー */
-        .special-header { background: #e0f2f1; color: #00695c; border-top: 4px solid #009688; }
-
-        /* 出場者リスト */
-        .artist-list { list-style: none; padding: 0; margin: 0; text-align: center; }
-        .artist-list li { padding: 12px 0; border-bottom: 1px dotted #ccc; font-weight: bold; font-size: 18px; }
-        
-        /* 文字色 */
-        .red-team .artist-list li { color: #d32f2f; }
-        .white-team .artist-list li { color: #b8860b; }
-        .special-section .artist-list li { color: #004d40; }
-
-        /* 特別企画エリア全体 */
-        .special-section { margin-top: 30px; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="input-area">
-        <h2>設定・入力</h2>
-        <div class="input-group">
-            <label>タイトル（例：〇〇家の、第1回 〇〇）</label>
-            <input type="text" id="input-title" value="私の最強" oninput="updatePreview()">
-        </div>
-        <div class="input-group">
-            <label>紅組アーティスト（1行に1組）</label>
-            <textarea id="input-red" oninput="updatePreview()">あいみょん&#13;椎名林檎&#13;Ado&#13;宇多田ヒカル</textarea>
-        </div>
-        <div class="input-group">
-            <label>白組アーティスト（1行に1組）</label>
-            <textarea id="input-white" oninput="updatePreview()">Vaundy&#13;King Gnu&#13;藤井風&#13;星野源</textarea>
-        </div>
-        <div class="input-group">
-            <label>特別企画（1行に1組）</label>
-            <textarea id="input-special" oninput="updatePreview()">Queen&#13;松平健</textarea>
-        </div>
-        <button onclick="downloadImage()">画像を保存する</button>
-    </div>
-
-    <div id="preview-wrapper">
-        <div id="preview-area">
-            <div class="header-logo">2025年 N◯K</div>
-            <div class="main-title"><span id="display-title">私の最強</span>紅白歌合戦</div>
-            
-            <div class="teams-container">
-                <div class="team red-team">
-                    <div class="team-header red-header">紅 組</div>
-                    <ul class="artist-list" id="list-red"></ul>
-                </div>
-                <div class="team white-team">
-                    <div class="team-header white-header">白 組</div>
-                    <ul class="artist-list" id="list-white"></ul>
-                </div>
-            </div>
-
-            <div class="special-section">
-                <div class="team-header special-header">特別企画</div>
-                <ul class="artist-list" id="list-special"></ul>
-            </div>
-            
-            </div>
-    </div>
-</div>
-
-<script>
-    updatePreview();
-
-    function updatePreview() {
-        document.getElementById('display-title').innerText = document.getElementById('input-title').value;
-
-        function generateList(inputId, listId) {
-            const text = document.getElementById(inputId).value;
-            const lines = text.split('\n');
-            const listElement = document.getElementById(listId);
-            listElement.innerHTML = '';
-
-            lines.forEach(line => {
-                if (line.trim() !== '') {
-                    const li = document.createElement('li');
-                    li.innerText = line;
-                    listElement.appendChild(li);
-                }
-            });
+        /* ロゴとタイトル */
+        .header-logo { 
+            font-size: 20px; 
+            color: #b8860b; /* 金色 */
+            margin-bottom: 15px; 
+            font-weight: bold;
+            font-family: sans-serif;
+            letter-spacing: 1px;
         }
-
-        generateList('input-red', 'list-red');
-        generateList('input-white', 'list-white');
-        generateList('input-special', 'list-special');
-    }
-
-    function downloadImage() {
-        const target = document.getElementById('preview-area');
-        html2canvas(target, { scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'kohaku_2025.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-    }
-</script>
-
-</body>
-</html>
+        .main-title { 
+            font-size: 40px; 
+            font-weight: bold; 
+            color: #333; 
+            letter-spacing: 2px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        
+        /* 「出場歌手」というサブタイトル（元の画像に似せる） */
+        .sub-header {
+            margin-bottom: 30px;
+            font-family: sans-serif;
+            color: #333;
+        }
+        .sub-header h3 {
+            font-size: 22px;
+            margin: 0 0 5px 0;
+            font-weight: bold;
