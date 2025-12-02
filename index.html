@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta property="og:title" content="My紅白歌合戦メーカー 2025">
+    <meta property="og:description" content="自分だけの紅白歌合戦の出演者リストを作って画像保存できるツールです。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23d32f2f%22/></svg>">
+
     <title>My紅白歌合戦メーカー 2025</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* ページ全体の基本設定 */
+        /* 基本設定 */
         body { font-family: sans-serif; background: #eee; margin: 0; padding: 20px; color: #333; }
-        
-        /* レイアウト枠 */
         .container { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
 
-        /* 左側：入力フォーム */
+        /* 入力エリア */
         .input-area { 
             flex: 1; 
             background: white; 
@@ -20,97 +26,211 @@
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
             min-width: 300px; 
-            z-index: 10; /* 入力欄が手前に来るように */
+            z-index: 10; 
         }
         .input-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
         input[type="text"], textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid #ddd; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; 
         }
         input[type="text"]:focus, textarea:focus { border-color: #b8860b; outline: none; }
         textarea { height: 120px; resize: vertical; }
         
+        /* ボタン類 */
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         button { 
-            background: #333; color: white; border: none; padding: 15px; 
-            cursor: pointer; font-size: 16px; border-radius: 6px; 
-            width: 100%; font-weight: bold; transition: background 0.3s;
+            border: none; padding: 15px; cursor: pointer; font-size: 16px; border-radius: 6px; font-weight: bold; transition: background 0.3s; flex: 1;
         }
-        button:hover { background: #555; }
+        .btn-save { background: #333; color: white; }
+        .btn-save:hover { background: #555; }
+        .btn-clear { background: #ddd; color: #333; flex: 0.4; } /* クリアボタンは少し小さく */
+        .btn-clear:hover { background: #ccc; }
 
-        /* --- 修正箇所：プレビューのラッパー --- */
+        /* プレビューラッパー */
         #preview-wrapper {
             flex: 2;
-            /* overflow: hidden; を削除し、表示が切れるのを防ぐ */
             position: relative;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-bottom: 50px; /* 下に余裕を持たせる */
+            padding-bottom: 50px; 
         }
 
-        /* 画像化される本体 */
+        /* 画像本体 */
         #preview-area { 
-            width: 800px;
-            min-width: 800px;
-            background: white; 
-            padding: 50px 40px; 
-            box-sizing: border-box; 
-            text-align: center;
+            width: 800px; min-width: 800px; background: white; padding: 50px 40px; 
+            box-sizing: border-box; text-align: center;
             font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            transform-origin: top center;
-            /* 高さは内容に応じて自動で伸びる */
-            height: auto; 
+            transform-origin: top center; height: auto; 
         }
 
-        /* ロゴとタイトル */
-        .header-logo { 
-            font-size: 20px; 
-            color: #b8860b; 
-            margin-bottom: 15px; 
-            font-weight: bold;
-            font-family: sans-serif;
-            letter-spacing: 1px;
-        }
-        .main-title { 
-            font-size: 40px; 
-            font-weight: bold; 
-            color: #333; 
-            letter-spacing: 2px;
-            line-height: 1.2;
-            margin-bottom: 10px;
-        }
+        /* デザイン詳細 */
+        .header-logo { font-size: 20px; color: #b8860b; margin-bottom: 15px; font-weight: bold; font-family: sans-serif; letter-spacing: 1px; }
+        .main-title { font-size: 40px; font-weight: bold; color: #333; letter-spacing: 2px; line-height: 1.2; margin-bottom: 10px; }
+        .sub-header { margin-bottom: 30px; font-family: sans-serif; color: #333; }
+        .sub-header h3 { font-size: 22px; margin: 0 0 5px 0; font-weight: bold; }
+        .sub-header p { font-size: 12px; margin: 0; color: #666; }
+
+        .teams-container { display: flex; justify-content: space-between; gap: 0; border-top: 1px solid #ddd; align-items: flex-start; }
+        .team { flex: 1; padding-top: 20px; }
         
-        /* サブタイトル */
-        .sub-header {
-            margin-bottom: 30px;
-            font-family: sans-serif;
-            color: #333;
-        }
-        .sub-header h3 {
-            font-size: 22px;
-            margin: 0 0 5px 0;
-            font-weight: bold;
-        }
-        .sub-header p {
-            font-size: 12px;
-            margin: 0;
-            color: #666;
-        }
+        .team-bar { padding: 8px; font-weight: bold; font-family: sans-serif; font-size: 16px; margin-bottom: 15px; width: 90%; margin-left: auto; margin-right: auto; }
+        .red-bar { background: #ffebeb; color: #d32f2f; border-top: 3px solid #d32f2f; }
+        .white-bar { background: #fff8e1; color: #b8860b; border-top: 3px solid #b8860b; }
 
-        /* 紅白リストのコンテナ */
-        .teams-container { 
-            display: flex; 
-            justify-content: space-between; 
-            gap: 0;
-            border-top: 1px solid #ddd;
-            align-items: flex-start; /* 縦位置を上揃えに */
+        .artist-list { list-style: none; padding: 0; margin: 0; text-align: center; }
+        .artist-list li { padding: 14px 0; border-bottom: 1px dotted #ccc; font-weight: bold; font-size: 19px; letter-spacing: 0.5px; word-break: break-all; }
+        .red-team .artist-list li { color: #d32f2f; }
+        .white-team .artist-list li { color: #b8860b; }
+
+        .special-section { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+        .special-bar { background: #e0f2f1; color: #00695c; border-top: 3px solid #009688; padding: 8px; font-weight: bold; font-family: sans-serif; font-size: 16px; margin-bottom: 15px; width: 100%; }
+        .special-section .artist-list li { color: #004d40; }
+
+        /* スマホ対応 */
+        @media (max-width: 900px) {
+            body { padding: 10px; }
+            .container { flex-direction: column; align-items: stretch; gap: 20px; }
+            .input-area { width: 100%; padding: 15px; }
+            #preview-wrapper { width: 100%; padding: 0; margin-top: 10px; padding-bottom: 20px; }
         }
-        .team { 
-            flex: 1; 
-            padding-top:
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="input-area">
+        <h2 style="margin-top:0;">設定</h2>
+        <div class="input-group">
+            <label>タイトル</label>
+            <input type="text" id="input-title" value="私の最強" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <label>紅組（1行に1組）</label>
+            <textarea id="input-red" oninput="updatePreview()">あいみょん&#13;椎名林檎&#13;Ado&#13;宇多田ヒカル</textarea>
+        </div>
+        <div class="input-group">
+            <label>白組（1行に1組）</label>
+            <textarea id="input-white" oninput="updatePreview()">Vaundy&#13;King Gnu&#13;藤井風&#13;星野源</textarea>
+        </div>
+        <div class="input-group">
+            <label>特別企画</label>
+            <textarea id="input-special" oninput="updatePreview()">Queen&#13;松平健</textarea>
+        </div>
+        <div class="btn-group">
+            <button class="btn-clear" onclick="clearInputs()">クリア</button>
+            <button class="btn-save" onclick="downloadImage()">画像を保存する</button>
+        </div>
+    </div>
+
+    <div id="preview-wrapper">
+        <div id="preview-area">
+            <div class="header-logo">第76回 N◯K</div>
+            <div class="main-title"><span id="display-title">私の最強</span>紅白歌合戦</div>
+            <div class="sub-header">
+                <h3>出場歌手</h3>
+                <p>50音順（カッコ内は出場回数）</p>
+            </div>
+            
+            <div class="teams-container">
+                <div class="team red-team">
+                    <div class="team-bar red-bar">紅 組</div>
+                    <ul class="artist-list" id="list-red"></ul>
+                </div>
+                <div class="team white-team">
+                    <div class="team-bar white-bar">白 組</div>
+                    <ul class="artist-list" id="list-white"></ul>
+                </div>
+            </div>
+
+            <div class="special-section">
+                <div class="team-bar special-bar">特別企画</div>
+                <ul class="artist-list" id="list-special"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    updatePreview();
+    window.addEventListener('resize', fitPreviewToScreen);
+    window.addEventListener('load', fitPreviewToScreen);
+
+    // プレビューの縮小計算
+    function fitPreviewToScreen() {
+        const wrapper = document.getElementById('preview-wrapper');
+        const preview = document.getElementById('preview-area');
+        const wrapperWidth = wrapper.clientWidth;
+        const previewWidth = 800; 
+        const previewHeight = preview.offsetHeight;
+
+        if (wrapperWidth < previewWidth) {
+            const scale = wrapperWidth / previewWidth;
+            preview.style.transform = `scale(${scale})`;
+            wrapper.style.height = `${previewHeight * scale}px`;
+            preview.style.marginBottom = `-${previewHeight * (1 - scale)}px`;
+        } else {
+            preview.style.transform = 'none';
+            preview.style.marginBottom = '0';
+            wrapper.style.height = 'auto';
+        }
+    }
+
+    // 入力反映
+    function updatePreview() {
+        document.getElementById('display-title').innerText = document.getElementById('input-title').value;
+
+        function generateList(inputId, listId) {
+            const text = document.getElementById(inputId).value;
+            const lines = text.split('\n');
+            const listElement = document.getElementById(listId);
+            listElement.innerHTML = '';
+            lines.forEach(line => {
+                if (line.trim() !== '') {
+                    const li = document.createElement('li');
+                    li.innerText = line;
+                    listElement.appendChild(li);
+                }
+            });
+        }
+        generateList('input-red', 'list-red');
+        generateList('input-white', 'list-white');
+        generateList('input-special', 'list-special');
+        setTimeout(fitPreviewToScreen, 10);
+    }
+
+    // 入力クリア機能
+    function clearInputs() {
+        if(confirm("入力内容をすべて消去しますか？")) {
+            document.getElementById('input-title').value = "〇〇";
+            document.getElementById('input-red').value = "";
+            document.getElementById('input-white').value = "";
+            document.getElementById('input-special').value = "";
+            updatePreview();
+        }
+    }
+
+    // 画像保存
+    function downloadImage() {
+        const target = document.getElementById('preview-area');
+        const originalTransform = target.style.transform;
+        target.style.transform = 'none';
+        
+        const options = {
+            scale: 2, width: 800, windowWidth: 1200, backgroundColor: '#ffffff',
+            height: target.offsetHeight
+        };
+
+        html2canvas(target, options).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'kohaku_2025.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            target.style.transform = originalTransform;
+        });
+    }
+</script>
+
+</body>
+</html>
