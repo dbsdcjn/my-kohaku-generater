@@ -9,10 +9,10 @@
         /* ページ全体の基本設定 */
         body { font-family: sans-serif; background: #eee; margin: 0; padding: 20px; color: #333; }
         
-        /* レイアウト枠：PCなら横並び、スマホなら縦並び */
+        /* レイアウト枠 */
         .container { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
 
-        /* 左側：入力フォームのデザイン */
+        /* 左側：入力フォーム */
         .input-area { 
             flex: 1; 
             background: white; 
@@ -20,6 +20,7 @@
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
             min-width: 300px; 
+            z-index: 10; /* 入力欄が手前に来るように */
         }
         .input-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
@@ -41,37 +42,36 @@
         }
         button:hover { background: #555; }
 
-        /* --- ここから画像になる部分のデザイン --- */
-        /* プレビューのラッパー（スマホで縮小表示するための枠） */
+        /* --- 修正箇所：プレビューのラッパー --- */
         #preview-wrapper {
             flex: 2;
-            overflow: hidden; 
+            /* overflow: hidden; を削除し、表示が切れるのを防ぐ */
+            position: relative;
             display: flex;
-            justify-content: center; /* 中央寄せ */
+            justify-content: center;
             align-items: flex-start;
-            /* 背景に余白を持たせる */
-            padding: 10px;
+            padding-bottom: 50px; /* 下に余裕を持たせる */
         }
 
-        /* 画像化される本体（幅800px固定・絶対崩れないようにする） */
+        /* 画像化される本体 */
         #preview-area { 
-            width: 800px;  /* ここを固定することで画像サイズを一律にする */
+            width: 800px;
             min-width: 800px;
             background: white; 
             padding: 50px 40px; 
             box-sizing: border-box; 
             text-align: center;
-            /* NHK風フォント */
             font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            /* 縮小の基準点 */
             transform-origin: top center;
+            /* 高さは内容に応じて自動で伸びる */
+            height: auto; 
         }
 
         /* ロゴとタイトル */
         .header-logo { 
             font-size: 20px; 
-            color: #b8860b; /* 金色 */
+            color: #b8860b; 
             margin-bottom: 15px; 
             font-weight: bold;
             font-family: sans-serif;
@@ -86,7 +86,7 @@
             margin-bottom: 10px;
         }
         
-        /* 「出場歌手」というサブタイトル（元の画像に似せる） */
+        /* サブタイトル */
         .sub-header {
             margin-bottom: 30px;
             font-family: sans-serif;
@@ -96,3 +96,21 @@
             font-size: 22px;
             margin: 0 0 5px 0;
             font-weight: bold;
+        }
+        .sub-header p {
+            font-size: 12px;
+            margin: 0;
+            color: #666;
+        }
+
+        /* 紅白リストのコンテナ */
+        .teams-container { 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 0;
+            border-top: 1px solid #ddd;
+            align-items: flex-start; /* 縦位置を上揃えに */
+        }
+        .team { 
+            flex: 1; 
+            padding-top:
