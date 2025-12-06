@@ -7,7 +7,8 @@
     <meta property="og:title" content="My紅白歌合戦メーカー 2025">
     <meta property="og:description" content="自分だけの紅白歌合戦の出演者リストを作って画像保存できるツールです。">
     <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://dbsdcjn.github.io/my-kohaku-generater/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23d32f2f%22/></svg>">
 
@@ -43,7 +44,7 @@
         }
         .btn-save { background: #333; color: white; }
         .btn-save:hover { background: #555; }
-        .btn-clear { background: #ddd; color: #333; flex: 0.4; } /* クリアボタンは少し小さく */
+        .btn-clear { background: #ddd; color: #333; flex: 0.4; }
         .btn-clear:hover { background: #ccc; }
 
         /* プレビューラッパー */
@@ -68,9 +69,10 @@
         /* デザイン詳細 */
         .header-logo { font-size: 20px; color: #b8860b; margin-bottom: 15px; font-weight: bold; font-family: sans-serif; letter-spacing: 1px; }
         .main-title { font-size: 40px; font-weight: bold; color: #333; letter-spacing: 2px; line-height: 1.2; margin-bottom: 10px; }
+        
+        /* サブヘッダー（注釈削除済み） */
         .sub-header { margin-bottom: 30px; font-family: sans-serif; color: #333; }
-        .sub-header h3 { font-size: 22px; margin: 0 0 5px 0; font-weight: bold; }
-        .sub-header p { font-size: 12px; margin: 0; color: #666; }
+        .sub-header h3 { font-size: 22px; margin: 0; font-weight: bold; }
 
         .teams-container { display: flex; justify-content: space-between; gap: 0; border-top: 1px solid #ddd; align-items: flex-start; }
         .team { flex: 1; padding-top: 20px; }
@@ -128,10 +130,10 @@
         <div id="preview-area">
             <div class="header-logo">第76回 N◯K</div>
             <div class="main-title"><span id="display-title">私の最強</span>紅白歌合戦</div>
+            
             <div class="sub-header">
                 <h3>出場歌手</h3>
-                <p>50音順（カッコ内は出場回数）</p>
-            </div>
+                </div>
             
             <div class="teams-container">
                 <div class="team red-team">
